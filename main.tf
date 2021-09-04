@@ -12,7 +12,7 @@ resource "google_compute_instance" "backendcluster" {
     machine_type = "f1-micro"
     tags = ["backend-vm"]
     metadata = {
-        ssh-keys = file("~/.ssh/id_rsa.pub")
+        ssh-keys = "${var.user}:${file(var.publickeypath)}"
     }
     
     boot_disk {
@@ -41,8 +41,10 @@ resource "google_compute_firewall" "ssh-rule" {
   network = google_compute_network.vpc_network.name
   allow {
     protocol = "tcp"
-    ports = ["22"]
+    ports = ["22", "80", "8080"]
+
   }
+
   target_tags = ["backend-vm"]
   source_ranges = ["0.0.0.0/0"]
 }
@@ -59,14 +61,11 @@ resource "null_resource" "prov_apache"{
         connection {
         host        = google_compute_address.static[count.index].address
         type        = "ssh"
-        user        = "basatrij"
+        user        = var.user
         timeout     = "50s"
-        private_key = file("~/.ssh/id_rsa")
+        private_key = file(var.privatekeypath)
         }
-        inline = [
-        "sudo yum -y install epel-release",
-        "sudo yum -y install nginx",
-        "sudo nginx -v",
-        ]
+        inline = ["sudo yum -y update", "sudo yum install -y httpd", "sudo service httpd start", "echo '<!doctype html><html><body><h1>CONGRATS!!..You have configured successfully your remote exec provisioner!</h1></body></html>' | sudo tee /var/www/html/index.html"]
+
     }
 }
