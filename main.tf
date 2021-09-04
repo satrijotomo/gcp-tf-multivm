@@ -3,7 +3,7 @@
 resource "google_compute_address" "static" {
   count = var.vmcount
   name = "vm-pip-${count.index}"
-  depends_on = [ google_compute_firewall.ssh-rule ]
+  depends_on = [ google_compute_firewall.ssh-http-rule]
 }
 
 resource "google_compute_instance" "backendcluster" {
@@ -36,7 +36,7 @@ resource "google_compute_network" "vpc_network" {
   auto_create_subnetworks = "true"
 }
 
-resource "google_compute_firewall" "ssh-rule" {
+resource "google_compute_firewall" "ssh-http-rule" {
   name = "tf-allow-ssh"
   network = google_compute_network.vpc_network.name
   allow {
