@@ -5,6 +5,7 @@
 4. SSH to each instance and running remote-exec
 
 **Expected Result**
+
 After script is finished running, go to Compute Engine page in Google Cloud Console and get the public IP address of each VM.
 Open http sessions from a browser toward the public IP addresses. You should see a message from each VM: 
 "CONGRATS!!..You have configured successfully your remote exec provisioner!"
